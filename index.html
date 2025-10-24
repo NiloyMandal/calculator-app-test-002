@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Basic Calculator</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  .calculator {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+  }
+  #display {
+    width: 100%;
+    height: 50px;
+    font-size: 24px;
+    text-align: right;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+  }
+  .buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  button {
+    padding: 15px;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #e0e0e0;
+    transition: background-color 0.2s;
+  }
+  button:hover {
+    background-color: #d0d0d0;
+  }
+  .operator {
+    background-color: #ff9f43;
+  }
+  .operator:hover {
+    background-color: #ff7f00;
+  }
+  .equals {
+    background-color: #4caf50;
+    grid-column: span 2;
+  }
+  .clear {
+    background-color: #f44336;
+  }
+  .clear:hover {
+    background-color: #da190b;
+  }
+</style>
+</head>
+<body>
+<div class="calculator">
+  <input type="text" id="display" disabled />
+  <div class="buttons">
+    <button>7</button>
+    <button>8</button>
+    <button>9</button>
+    <button class="operator">/</button>
+    <button>4</button>
+    <button>5</button>
+    <button>6</button>
+    <button class="operator">*</button>
+    <button>1</button>
+    <button>2</button>
+    <button>3</button>
+    <button class="operator">-</button>
+    <button>0</button>
+    <button class="clear">C</button>
+    <button>=</button>
+    <button class="operator">+</button>
+  </div>
+</div>
+<script>
+  const display = document.querySelector('#display');
+  const buttons = document.querySelectorAll('button');
+  let firstOperand = null;
+  let secondOperand = null;
+  let currentOperation = null;
+  let shouldResetScreen = false;
+
+  function appendNumber(number) {
+    if (display.value === '0' || shouldResetScreen) {
+      resetScreen();
+    }
+    display.value += number;
+  }
+
+  function resetScreen() {
+    display.value = '';
+    shouldResetScreen = false;
+  }
+
+  function setOperation(operator) {
+    if (currentOperation !== null) {
+      compute();
+    }
+    firstOperand = parseFloat(display.value);
+    currentOperation = operator;
+    shouldResetScreen = true;
+  }
+
+  function compute() {
+    if (currentOperation === null || shouldResetScreen) return;
+    secondOperand = parseFloat(display.value);
+    let result;
+    switch (currentOperation) {
+      case '+':
+        result = firstOperand + secondOperand;
+        break;
+      case '-':
+        result = firstOperand - secondOperand;
+        break;
+      case '*':
+        result = firstOperand * secondOperand;
+        break;
+      case '/':
+        result = secondOperand === 0 ? 'Error' : firstOperand / secondOperand;
+        break;
+      default:
+        return;
+    }
+    display.value = result;
+    currentOperation = null;
+  }
+
+  function clear() {
+    display.value = '0';
+    firstOperand = null;
+    secondOperand = null;
+    currentOperation = null;
+    shouldResetScreen = false;
+  }
+
+  buttons.forEach(button => {
+    if (button.textContent.match(/[0-9]/)) {
+      button.addEventListener('click', () => appendNumber(button.textContent));
+    } else if (button.classList.contains('operator')) {
+      button.addEventListener('click', () => setOperation(button.textContent));
+    } else if (button.textContent === '=') {
+      button.addEventListener('click', compute);
+    } else if (button.classList.contains('clear')) {
+      button.addEventListener('click', clear);
+    }
+  });
+
+  // Initialize display
+  display.value = '0';
+</script>
+</body>
+</html>
